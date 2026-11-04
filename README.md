@@ -7,6 +7,19 @@
 
 游戏当前版本：**CL 29726**（2026-11-02 EA 首发） | 补丁版本：v1.0
 
+## 下载
+
+**GitHub 直下**（Releases 页点 zip）：
+[GravHounds-zhCN-patch-v1.0.zip](../../releases/download/v1.0/GravHounds-zhCN-patch-v1.0.zip)
+
+**国内加速直链**（内容与本页 Release 完全一致，SHA256 相同）：
+https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/download/v1.0/GravHounds-zhCN-patch-v1.0.zip
+
+**网盘**：
+- 蓝奏云：（待填）
+- 123 云盘：（待填）
+- 百度网盘：（待填）
+
 ## 安装（三步）
 
 1. 从 [Releases](../../releases) 下载 `GravHounds-zhCN-patch-v1.0.zip`，解压得到 `GravHounds中文补丁` 文件夹
