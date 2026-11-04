@@ -1,0 +1,101 @@
+﻿param([string]$GamePath)
+
+$ErrorActionPreference = 'Stop'
+$pkgRoot = $PSScriptRoot | Split-Path -Parent      # ...\GravHounds<中文补丁>\
+$repak   = Join-Path $pkgRoot 'tools\repak.exe'
+$overlay = Join-Path $pkgRoot 'overlay'
+
+function Ok($t){ Write-Host $t -ForegroundColor Green }
+function Step($t){ Write-Host $t -ForegroundColor Cyan }
+function Bad($t){ Write-Host $t -ForegroundColor Red }
+function Warn($t){ Write-Host $t -ForegroundColor Yellow }
+
+function Test-GameRoot($p) { return ($p -and (Test-Path (Join-Path $p 'WFOSteam.exe'))) }
+
+function Find-SteamGame {
+    $libs = New-Object System.Collections.Generic.List[string]
+    foreach ($k in @('HKCU:\Software\Valve\Steam','HKLM:\SOFTWARE\WOW6432Node\Valve\Steam','HKLM:\SOFTWARE\Valve\Steam')) {
+        $pp = (Get-ItemProperty $k -ErrorAction SilentlyContinue)
+        if ($pp) { if ($pp.SteamPath) { $libs.Add($pp.SteamPath) }; if ($pp.InstallPath) { $libs.Add($pp.InstallPath) } }
+    }
+    foreach ($l in @($libs)) {
+        $vdf = Join-Path $l 'steamapps\libraryfolders.vdf'
+        if (Test-Path $vdf) {
+            foreach ($line in (Get-Content $vdf -ErrorAction SilentlyContinue)) {
+                $m = [regex]::Match($line, '"path"\s+"([^"]+)"')
+                if ($m.Success) { $libs.Add(($m.Groups[1].Value -replace '\\\\','\')) }
+            }
+        }
+    }
+    foreach ($lib in ($libs | Select-Object -Unique)) {
+        $c = Join-Path $lib 'steamapps\common\GravHounds'
+        if (Test-GameRoot $c) { return $c }
+    }
+    return $null
+}
+
+Write-Host ''
+Write-Host '================ GRAVHOUNDS 简体中文补丁 ================' -ForegroundColor White
+
+# 1) 本补丁文件夹就放在游戏根目录 → 直接用它
+if (-not (Test-GameRoot $GamePath)) {
+    $parent = Split-Path $pkgRoot -Parent
+    if (Test-GameRoot $parent) { $GamePath = $parent }
+}
+# 2) 参数
+# 3) Steam 自动查找
+if (-not (Test-GameRoot $GamePath)) { $GamePath = Find-SteamGame }
+# 4) 弹窗手动选
+if (-not (Test-GameRoot $GamePath)) {
+    Warn '没找到游戏目录。请把本文件夹放进游戏根目录（与 WFOSteam.exe 同级）后重试，'
+    Warn '或者在弹窗里手动选择游戏文件夹。'
+    Add-Type -AssemblyName System.Windows.Forms
+    $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
+    $dlg.Description = '选择 GravHounds 游戏文件夹（里面有 WFOSteam.exe）'
+    if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { Bad '已取消。'; exit 1 }
+    $GamePath = $dlg.SelectedPath
+}
+if (-not (Test-GameRoot $GamePath)) { Bad ('这个目录里没有 WFOSteam.exe：' + $GamePath); exit 1 }
+
+$paks = Join-Path $GamePath 'WFO\Content\Paks'
+$pak  = Join-Path $paks 'pakchunk0-Windows.pak'
+if (-not (Test-Path $pak)) { Bad ('找不到 ' + $pak); exit 1 }
+if (Get-Process WFOSteam-Win64-Shipping -ErrorAction SilentlyContinue) { Bad '请先完全关闭游戏，再运行本脚本。'; exit 1 }
+
+Write-Host ('游戏目录：' + $GamePath) -ForegroundColor Gray
+Write-Host ''
+
+$bak = $pak + '.orig'
+if (Test-Path $bak) { Warn '检测到已安装过（存在 .orig 备份），将基于原版重新生成。' }
+else { Copy-Item $pak $bak -Force; Ok '已备份原版 pakchunk0-Windows.pak.orig' }
+
+$work = Join-Path $env:TEMP 'gh_zh_build'
+if (Test-Path $work) { Remove-Item $work -Recurse -Force }
+New-Item -ItemType Directory $work | Out-Null
+Copy-Item $bak (Join-Path $work 'pakchunk0-Windows.pak') -Force
+
+Step '[1/4] 解包原版 pak ...'
+& $repak unpack (Join-Path $work 'pakchunk0-Windows.pak') | Out-Null
+if ($LASTEXITCODE -ne 0) { Bad '解包失败'; exit 1 }
+
+Step '[2/4] 写入中文文本与字体 ...'
+Copy-Item (Join-Path $overlay '*') (Join-Path $work 'pakchunk0-Windows') -Recurse -Force
+
+Step '[3/4] 重新打包 ...'
+$newpak = Join-Path $work 'new.pak'
+& $repak pack (Join-Path $work 'pakchunk0-Windows') $newpak -m '../../../' --version V11 --compression Zlib | Out-Null
+if ($LASTEXITCODE -ne 0 -or -not (Test-Path $newpak)) { Bad '打包失败'; exit 1 }
+
+Step '[4/4] 安装 ...'
+Copy-Item $newpak $pak -Force
+Remove-Item $work -Recurse -Force
+
+Write-Host ''
+Ok '★ 安装完成！'
+Write-Host ''
+Write-Host '最后一步（只需做一次）：' -ForegroundColor White
+Write-Host '  启动游戏 → OPTIONS → GAMEPLAY → LANGUAGE'
+Write-Host '  语言改成  Deutsch (German)  →  返回 → 弹窗点 OK（游戏自动重启）'
+Write-Host '  重启后界面就是简体中文了。'
+Write-Host ''
+Write-Host '卸载：双击 卸载还原.bat' -ForegroundColor Gray

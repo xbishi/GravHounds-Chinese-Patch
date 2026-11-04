@@ -37,6 +37,10 @@
 |---|---|
 | `GravHounds-zhCN-patch-v1.0.zip` | `3b240ab3d0cf66dc773b9bcca119422be72339025ca4825c13967d8ba2517cb7` |
 
+## 源码审计
+
+补丁的全部文件就在本仓库 `overlay/`、`tools/` 目录及根目录脚本中，与 Release 包内容完全一致，可自行比对审计——不含任何游戏原始资源，不含网络行为，脚本逻辑一目了然。
+
 ## 工作方式（技术说明）
 
 补丁**不分发任何游戏原始资源**：安装脚本在你本机用 [repak](https://github.com/trumank/repak) 解包你自己的 `pakchunk0-Windows.pak`，注入中文 locres / locmeta / 字体后重新打包（v11 + Zlib），原包自动备份为 `pakchunk0-Windows.pak.orig`。
