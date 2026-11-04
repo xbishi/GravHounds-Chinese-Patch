@@ -10,6 +10,8 @@
 
 [![下载](https://img.shields.io/badge/下载-Releases-blue)](../../releases)
 
+![游戏内效果](screenshots/dozer-select.png)
+
 游戏当前版本：**CL 29726**（2026-11-02 EA 首发） | 补丁版本：v1.0
 
 ## 下载
@@ -20,10 +22,9 @@
 **国内加速直链**（内容与本页 Release 完全一致，SHA256 相同）：
 https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/download/v1.0/GravHounds-zhCN-patch-v1.0.zip
 
-**网盘**：
-- 蓝奏云：（待填）
-- 123 云盘：（待填）
-- 百度网盘：（待填）
+**网盘**（国内推荐，内容与 GitHub Release 完全一致）：
+- 夸克网盘：https://pan.quark.cn/s/b25ac55fe83d （需夸克 App 打开）
+- 百度网盘：https://pan.baidu.com/s/1D8Ppz73_bdHr-EuKOVPkUQ?pwd=am2c （提取码：am2c）
 
 ## 授权协议
 
