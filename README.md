@@ -12,15 +12,15 @@
 
 ![游戏内效果](screenshots/dozer-select.png)
 
-游戏当前版本：**CL 29726**（2026-11-02 EA 首发） | 补丁版本：v1.0
+游戏当前版本：**CL 29726**（2026-11-02 EA 首发） | 补丁版本：v1.1
 
 ## 下载
 
 **GitHub 直下**（Releases 页点 zip）：
-[GravHounds-zhCN-patch-v1.0.zip](../../releases/download/v1.0/GravHounds-zhCN-patch-v1.0.zip)
+[GravHounds-zhCN-patch-v1.1.zip](../../releases/download/v1.0/GravHounds-zhCN-patch-v1.1.zip)
 
 **国内加速直链**（内容与本页 Release 完全一致，SHA256 相同）：
-https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/download/v1.0/GravHounds-zhCN-patch-v1.0.zip
+https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/download/v1.0/GravHounds-zhCN-patch-v1.1.zip
 
 **网盘**（国内推荐，内容与 GitHub Release 完全一致）：
 - 夸克网盘：https://pan.quark.cn/s/b25ac55fe83d （需夸克 App 打开）
@@ -33,7 +33,7 @@ https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/d
 
 ## 安装（三步）
 
-1. 从 [Releases](../../releases) 下载 `GravHounds-zhCN-patch-v1.0.zip`，解压得到 `GravHounds中文补丁` 文件夹
+1. 从 [Releases](../../releases) 下载 `GravHounds-zhCN-patch-v1.1.zip`，解压得到 `GravHounds中文补丁` 文件夹
 2. 把这个文件夹**整个放进游戏根目录**（就是有 `WFOSteam.exe` 的那一层，和 `Engine`、`WFO` 并排）
 3. 双击文件夹里的 **`安装中文.bat`**，等 1~2 分钟看到「★ 安装完成！」即可
 
@@ -59,7 +59,7 @@ https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/d
 
 | 文件 | SHA256 |
 |---|---|
-| `GravHounds-zhCN-patch-v1.0.zip` | `3b240ab3d0cf66dc773b9bcca119422be72339025ca4825c13967d8ba2517cb7` |
+| `GravHounds-zhCN-patch-v1.1.zip` | `3b240ab3d0cf66dc773b9bcca119422be72339025ca4825c13967d8ba2517cb7` |
 
 ## 源码审计
 
@@ -75,4 +75,5 @@ https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/d
 
 ## 更新日志
 
+- **v1.1**（2026-11-05）：修正误翻（Ping→标记、Train→训练）；**键位名改为英文键盘原名**（如 Space/Space Bar，不再随德语语言位显示 Leertaste 等德语键名）
 - **v1.0**（2026-11-05）：首发，全量文本汉化 + 字体支持，对应游戏 CL 29726
