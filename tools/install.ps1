@@ -145,7 +145,7 @@ if ($staleBak) {
 }
 
 Step '[2/4] 写入中文文本与字体 ...'
-Copy-Item (Join-Path $overlay '*') (Join-Path $unpackedRoot) -Recurse -Force
+Copy-Item (Join-Path $overlay '*') $unpackedRoot -Recurse -Force
 
 Step '[3/4] 重新打包 ...'
 $newpak = Join-Path $work 'new.pak'
