@@ -59,7 +59,7 @@ https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/d
 
 | 文件 | SHA256 |
 |---|---|
-| `GravHounds-zhCN-patch-v1.3.zip` | `3b240ab3d0cf66dc773b9bcca119422be72339025ca4825c13967d8ba2517cb7` |
+| `GravHounds-zhCN-patch-v1.3.zip` | `9ee04c390c510041a601e910004b2a15d3e441db23af4223dc97f178a57a233e` |
 
 ## 源码审计
 
