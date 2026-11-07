@@ -115,11 +115,9 @@ $unpackedRoot = Join-Path $work 'pakchunk0-Windows'
 $deLoc = Join-Path $unpackedRoot 'WFO\Content\Localization\Game\de\Game.locres'
 $injected = $false
 if (Test-Path $deLoc) {
-    $bytes = [System.IO.File]::ReadAllBytes($deLoc)
-    # 官方德语文本极少出现 E4-E9 开头的 UTF-8 中文字节；注入版含大量中文
-    $cn = 0
-    foreach ($b in $bytes) { if ($b -ge 0xE4 -and $b -le 0xE9) { $cn++ } }
-    if ($cn -gt 200) { $injected = $true }
+    # 官方德语版不含中文；注入版含我们的译文特征词（整文件按 UTF-8 解码后查找）
+    $text = [System.IO.File]::ReadAllText($deLoc, [System.Text.Encoding]::UTF8)
+    if ($text.Contains([char]0x51FB + [char]0x6740) -or $text.Contains([char]0x91CD + [char]0x529B + [char]0x675F)) { $injected = $true }
 }
 
 if ($injected) {
