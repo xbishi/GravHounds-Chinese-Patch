@@ -59,7 +59,7 @@ https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/d
 
 | 文件 | SHA256 |
 |---|---|
-| `GravHounds-zhCN-patch-v1.3.zip` | `9ee04c390c510041a601e910004b2a15d3e441db23af4223dc97f178a57a233e` |
+| `GravHounds-zhCN-patch-v1.3.zip` | `d6af94fd69ee434b97ffe4acc611b9dd5504034b9bca2dbb61e229eacc657387` |
 
 ## 源码审计
 
@@ -75,7 +75,7 @@ https://ghfast.top/https://github.com/xbishi/GravHounds-Chinese-Patch/releases/d
 
 ## 更新日志
 
-- **v1.3**（2026-11-07）：**适配 11-06 游戏更新内容**——新增存档系统 15 条文本汉化（覆盖存档/读取失败/继续不保存等弹窗）、3 条更名内容同步（Cutting Edge→尖端科技、Danger Close→贴身火力、Dead Drop→死信投放）；引擎键位包随新版刷新
+- **v1.3**（2026-11-07）：**适配 11-06 游戏更新内容**——新增存档系统 15 条文本汉化（覆盖存档/读取失败/继续不保存等弹窗）、3 条更名内容同步（Cutting Edge→尖端科技、Danger Close→贴身火力、Dead Drop→死信投放）；引擎键位包随新版刷新；**修复首次安装时的参数提示卡点，全程无需任何手动输入**
 - **v1.2**（2026-11-07）：**适配 11-06 游戏更新**——修复"游戏更新后重装补丁导致启动报 StreamlineDeepDVC 错误"的脚本缺陷：安装/卸载脚本增加备份过期守卫（.orig 早于游戏版本时自动拒绝使用旧备份）与注入痕迹嗅探（检测到版本不匹配时给出明确恢复指引）。注意：本次游戏更新新增的内容暂时显示英文，翻译更新见后续版本
 - **v1.1**（2026-11-05）：修正误翻（Ping→标记、Train→训练）；**键位名改为英文键盘原名**（如 Space/Space Bar，不再随德语语言位显示 Leertaste 等德语键名）
 - **v1.0**（2026-11-05）：首发，全量文本汉化 + 字体支持，对应游戏 CL 29726
