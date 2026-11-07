@@ -66,24 +66,90 @@ Write-Host ('游戏目录：' + $GamePath) -ForegroundColor Gray
 Write-Host ''
 
 $bak = $pak + '.orig'
-if (Test-Path $bak) { Warn '检测到已安装过（存在 .orig 备份），将基于原版重新生成。' }
-else { Copy-Item $pak $bak -Force; Ok '已备份原版 pakchunk0-Windows.pak.orig' }
+$exe = Join-Path $GamePath 'WFO\Binaries\Win64\WFOSteam-Win64-Shipping.exe'
+if (-not (Test-Path $exe)) { $exe = Join-Path $GamePath 'WFOSteam.exe' }
+
+# ===== v1.2 关键守卫：备份是否已因游戏更新而过期 =====
+# 规则：.orig 备份的修改时间早于游戏主程序 → 游戏在安装补丁之后更新过 → 旧备份不能再用
+$staleBak = $false
+$useBak   = $false
+if (Test-Path $bak) {
+    $bakAge = (Get-Item $bak).LastWriteTime
+    $exeAge = (Get-Item $exe).LastWriteTime
+    if ($bakAge -lt $exeAge) {
+        $staleBak = $true
+        Warn '=============================================================='
+        Warn '检测到游戏在安装补丁之后更新过（.orig 备份已过期）。'
+        Warn '旧备份不能作为基底，否则会因版本不匹配导致游戏报错。'
+        Warn '=============================================================='
+    } else {
+        $useBak = $true
+        Warn '检测到已安装过（存在 .orig 备份），将基于备份原版重新生成。'
+    }
+} else {
+    Copy-Item $pak $bak -Force
+    Ok '已备份原版 pakchunk0-Windows.pak.orig'
+}
 
 $work = Join-Path $env:TEMP 'gh_zh_build'
 if (Test-Path $work) { Remove-Item $work -Recurse -Force }
 New-Item -ItemType Directory $work | Out-Null
-Copy-Item $bak (Join-Path $work 'pakchunk0-Windows.pak') -Force
 
-Step '[1/4] 解包原版 pak ...'
+if ($useBak) {
+    Copy-Item $bak (Join-Path $work 'pakchunk0-Windows.pak') -Force
+} else {
+    # 过期备份场景：以当前 pak 为基底尝试（仅当它还是官方干净版时才能成功，见下方嗅探）
+    Copy-Item $pak (Join-Path $work 'pakchunk0-Windows.pak') -Force
+}
+
+Step '[1/4] 解包 pak ...'
 & $repak unpack (Join-Path $work 'pakchunk0-Windows.pak') | Out-Null
-if ($LASTEXITCODE -ne 0) { Bad '解包失败'; exit 1 }
+if ($LASTEXITCODE -ne 0) {
+    Bad '解包失败（可能是游戏更新改变了 pak 格式）。'
+    if ($staleBak) { Bad '另外：游戏更新后请先在 Steam 验证文件完整性，再运行本脚本。' }
+    exit 1
+}
+
+# ===== v1.2 嗅探：当前基底是否为我们之前的注入产物 =====
+$unpackedRoot = Join-Path $work 'pakchunk0-Windows'
+$deLoc = Join-Path $unpackedRoot 'WFO\Content\Localization\Game\de\Game.locres'
+$injected = $false
+if (Test-Path $deLoc) {
+    $bytes = [System.IO.File]::ReadAllBytes($deLoc)
+    # 官方德语文本极少出现 E4-E9 开头的 UTF-8 中文字节；注入版含大量中文
+    $cn = 0
+    foreach ($b in $bytes) { if ($b -ge 0xE4 -and $b -le 0xE9) { $cn++ } }
+    if ($cn -gt 200) { $injected = $true }
+}
+
+if ($injected) {
+    Remove-Item $work -Recurse -Force
+    Bad '=============================================================='
+    Bad '当前 pakchunk0-Windows.pak 是旧版注入产物，且游戏已更新，'
+    Bad '两者版本不匹配（这正是启动报 StreamlineDeepDVC 错误的原因）。'
+    Bad ''
+    Bad '请按以下顺序操作：'
+    Bad '  1. Steam 库 → 右键 GRAVHOUNDS → 属性 → 已安装文件'
+    Bad '     → 验证文件完整性（恢复官方新版）'
+    Bad '  2. 删除游戏 Paks 目录里的 pakchunk0-Windows.pak.orig'
+    Bad '  3. 重新双击「安装中文.bat」'
+    Bad '=============================================================='
+    exit 1
+}
+
+if ($staleBak) {
+    # 当前 pak 是官方新版（干净），刷新备份
+    Copy-Item $pak $bak -Force
+    Ok '游戏已更新：备份 .orig 已刷新为新版官方 pak。'
+    Warn '注意：更新新增的游戏文本会暂时显示英文，等仓库出翻译更新版。'
+}
 
 Step '[2/4] 写入中文文本与字体 ...'
-Copy-Item (Join-Path $overlay '*') (Join-Path $work 'pakchunk0-Windows') -Recurse -Force
+Copy-Item (Join-Path $overlay '*') (Join-Path $unpackedRoot) -Recurse -Force
 
 Step '[3/4] 重新打包 ...'
 $newpak = Join-Path $work 'new.pak'
-& $repak pack (Join-Path $work 'pakchunk0-Windows') $newpak -m '../../../' --version V11 --compression Zlib | Out-Null
+& $repak pack $unpackedRoot $newpak -m '../../../' --version V11 --compression Zlib | Out-Null
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path $newpak)) { Bad '打包失败'; exit 1 }
 
 Step '[4/4] 安装 ...'
@@ -99,3 +165,4 @@ Write-Host '  语言改成  Deutsch (German)  →  返回 → 弹窗点 OK（游
 Write-Host '  重启后界面就是简体中文了。'
 Write-Host ''
 Write-Host '卸载：双击 卸载还原.bat' -ForegroundColor Gray
+Write-Host '游戏更新后：补丁会失效，先卸载还原或 Steam 验证完整性，再装新版补丁。' -ForegroundColor Gray
