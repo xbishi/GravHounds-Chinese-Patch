@@ -117,7 +117,9 @@ $injected = $false
 if (Test-Path $deLoc) {
     # 官方德语版不含中文；注入版含我们的译文特征词（整文件按 UTF-8 解码后查找）
     $text = [System.IO.File]::ReadAllText($deLoc, [System.Text.Encoding]::UTF8)
-    if ($text.Contains([char]0x51FB + [char]0x6740) -or $text.Contains([char]0x91CD + [char]0x529B + [char]0x675F)) { $injected = $true }
+    $marker1 = -join [char[]](0x51FB, 0x6740)
+    $marker2 = -join [char[]](0x91CD, 0x529B, 0x675F)
+    if ($text.Contains($marker1) -or $text.Contains($marker2)) { $injected = $true }
 }
 
 if ($injected) {
